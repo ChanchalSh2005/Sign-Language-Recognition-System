@@ -1,5 +1,6 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 streamlit
-torch
+torch --no-cache-dir
 mediapipe==0.10.9
 opencv-python-headless==4.9.0.80
 scikit-learn
