@@ -1,4 +1,8 @@
 import os
+# Force OpenCV to not look for a graphical display
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
+# Add the local library path to the system path
+os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
 import cv2
 import numpy as np
 import torch
