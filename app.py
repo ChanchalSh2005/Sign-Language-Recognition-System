@@ -2,6 +2,7 @@ import os
 # Force OpenCV to not look for a graphical display
 os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
+os.system("pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cpu")
 import cv2
 import numpy as np
 import torch
