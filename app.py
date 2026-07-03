@@ -1,8 +1,7 @@
 import os
 # Force OpenCV to not look for a graphical display
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
-# Add the local library path to the system path
-os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
 import cv2
 import numpy as np
 import torch
@@ -171,6 +170,7 @@ if camera_image is not None:
             row_data_scaled = scaler.transform([row_data])
         else:
             row_data_scaled = [row_data] 
+        st.write(len(row_data))
             
         input_tensor = torch.tensor(row_data_scaled, dtype=torch.float32).to(device)
         

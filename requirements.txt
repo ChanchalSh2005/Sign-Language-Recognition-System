@@ -1,7 +1,7 @@
 streamlit
 torch
-mediapipe
-opencv-python-headless
+mediapipe==0.10.9
+opencv-python-headless==4.9.0.80
 scikit-learn
 joblib
 gTTS
