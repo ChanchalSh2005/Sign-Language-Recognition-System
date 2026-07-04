@@ -1,8 +1,4 @@
 import os
-# Force OpenCV to not look for a graphical display
-os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.system("pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cpu")
 import cv2
 import numpy as np
 import torch
@@ -61,7 +57,7 @@ def load_models():
     else:
         st.error(f"❌ Model file not found! Please ensure '{model_path}' is in the folder.")
         
-    # 2. Load Encoders
+    # 2. Load Encoders (SCALER RESTORED FOR LOCAL USE)
     le = joblib.load('label_encoder.pkl') if os.path.exists('label_encoder.pkl') else None
     scaler = joblib.load('scaler.pkl') if os.path.exists('scaler.pkl') else None
 
@@ -74,7 +70,7 @@ def load_models():
     )
     hand_detector = vision.HandLandmarker.create_from_options(hand_options)
     
-    # 4. Load MediaPipe Pose Landmarker (NEW)
+    # 4. Load MediaPipe Pose Landmarker
     if not os.path.exists('pose_landmarker_lite.task'):
         os.system('wget -q https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task')
     pose_options = PoseLandmarkerOptions(
@@ -120,6 +116,7 @@ def play_audio(text):
 camera_image = st.camera_input("Make a sign and click to capture!")
 
 if camera_image is not None:
+    # --- Local-Safe Image Processing (Restored) ---
     pil_img = Image.open(camera_image).convert('RGB')
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=np.array(pil_img))
     
@@ -166,12 +163,18 @@ if camera_image is not None:
         else:
             row_data.append(0.0)
 
-        # --- PYTORCH PREDICTION ---
+        # --- SHAPE GUARD: ENSURE EXACTLY 33 FEATURES ---
+        if len(row_data) != 33:
+            if len(row_data) < 33:
+                row_data.extend([0.0] * (33 - len(row_data)))
+            else:
+                row_data = row_data[:33]
+
+        # --- PYTORCH PREDICTION (SCALER RESTORED) ---
         if scaler:
             row_data_scaled = scaler.transform([row_data])
         else:
             row_data_scaled = [row_data] 
-        st.write(len(row_data))
             
         input_tensor = torch.tensor(row_data_scaled, dtype=torch.float32).to(device)
         
